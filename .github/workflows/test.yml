@@ -1,0 +1,56 @@
+name: IFC Assignment Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10']
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ifcopenshell pytest nbconvert
+    
+    - name: Run autograder tests
+      run: |
+        cd ${{ github.workspace }}
+        python -m pytest tests/test_autograder.py -v --tb=short
+    
+    - name: Test notebook execution
+      run: |
+        cd ${{ github.workspace }}
+        python -m pytest tests/test_autograder.py::TestNotebookExecution -v
+    
+    - name: Check Exercise 1
+      run: |
+        cd ${{ github.workspace }}
+        python -m pytest tests/test_autograder.py::TestExercise1 -v
+      continue-on-error: true
+    
+    - name: Check Exercise 2
+      run: |
+        cd ${{ github.workspace }}
+        python -m pytest tests/test_autograder.py::TestExercise2 -v
+      continue-on-error: true
+    
+    - name: Check Code Quality
+      run: |
+        cd ${{ github.workspace }}
+        python -m pytest tests/test_autograder.py::TestCodeQuality -v
+      continue-on-error: true

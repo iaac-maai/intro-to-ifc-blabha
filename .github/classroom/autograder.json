@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Setup & Notebook Integrity",
+    "setup": "pip install -q ifcopenshell pytest nbconvert",
+    "run": "python -m pytest tests/test_autograder.py::TestNotebookExecution -v",
+    "points": 5
+  },
+  {
+    "name": "Exercise 1: Building Code Compliance Checker",
+    "setup": "",
+    "run": "python -m pytest tests/test_autograder.py::TestExercise1 -v",
+    "points": 40
+  },
+  {
+    "name": "Exercise 2: Window Compliance Analysis",
+    "setup": "",
+    "run": "python -m pytest tests/test_autograder.py::TestExercise2 -v",
+    "points": 40
+  },
+  {
+    "name": "Code Quality & Documentation",
+    "setup": "",
+    "run": "python -m pytest tests/test_autograder.py::TestCodeQuality -v",
+    "points": 10
+  },
+  {
+    "name": "Bonus: Fire Safety Routes (Optional)",
+    "setup": "",
+    "run": "python -m pytest tests/test_autograder.py::TestBonus -v",
+    "points": 5
+  }
+]
