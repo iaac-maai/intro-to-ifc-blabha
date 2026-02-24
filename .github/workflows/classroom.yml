@@ -1,0 +1,60 @@
+name: Autograding Tests
+
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install -q ifcopenshell pytest nbconvert
+    
+    - name: Test 1 - Setup & Notebook Integrity
+      id: test-setup
+      run: python -m pytest tests/test_autograder.py::TestNotebookExecution -v
+      continue-on-error: true
+    
+    - name: Test 2 - Exercise 1 Building Code Compliance
+      id: test-exercise1
+      run: python -m pytest tests/test_autograder.py::TestExercise1 -v
+      continue-on-error: true
+    
+    - name: Test 3 - Exercise 2 Window Compliance
+      id: test-exercise2
+      run: python -m pytest tests/test_autograder.py::TestExercise2 -v
+      continue-on-error: true
+    
+    - name: Test 4 - Code Quality
+      id: test-quality
+      run: python -m pytest tests/test_autograder.py::TestCodeQuality -v
+      continue-on-error: true
+    
+    - name: Test 5 - Bonus Fire Safety
+      id: test-bonus
+      run: python -m pytest tests/test_autograder.py::TestBonus -v
+      continue-on-error: true
+    
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      if: always()
+      with:
+        runners: test-setup,test-exercise1,test-exercise2,test-quality,test-bonus
